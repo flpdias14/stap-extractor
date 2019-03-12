@@ -10,9 +10,23 @@ df = pd.read_csv(filename, sep="\n", header=None)
 
 # adiciona o nome da coluna
 df.columns = ['process']
+df['index'] = df.index
+# print df.iloc[21278:21282, 0]
 
 df_filtered =  df[df.process.str.contains('#')]
 
+# df_filtered = df_filtered[df_filtered.process.str.contains(',P')]
+
+def filtrar_data_frame():
+    indexes =  df_filtered.index
+    ranges = len(indexes)
+    for i in xrange(ranges):
+        if i+1 >= ranges:
+            break 
+        diff = indexes[i+1] -indexes[i];
+        if diff > 1:
+            print df.iloc[i:i+diff, 0]
+ 
 
 registers = df_filtered['process'].str.replace('[\[\]]', '').str.split(',');
 
@@ -32,8 +46,8 @@ signatures= df['process'].unique()
 
 groupby_process =  df.groupby('process', as_index=False)['ocurences'].agg(['count', 'min', 'mean', 'max', 'sum'])
 groupby_process = groupby_process.sort_values('sum', ascending=False)
-# groupby_process =  df.groupby('process')
-print groupby_process
+#groupby_process =  df.groupby('process')
+print groupby_process.head(5)
 # net =  groupby_process.get_group('NetworkManager(402)/Pai: systemd(1)/UID: 0')
 # net.ocurences.astype(int)
 # print net.dtypes()
