@@ -14,7 +14,7 @@ def separar_processos(processo=''):
 def separar_quantidades(quantidades, separador):
     return quantidades.split(separador)[1].split(',P')[0].split(',')
 
-filename = '/home/felipe/Área de trabalho/resultados docker final/com networkmanager/felipe/stap-networkmanager.txt'
+filename = '/home/felipe/Documentos/03 - UFRPE/BCC/Disciplinas/09/TCC/Envelhecimento/Docker/Dados TCC/IaaS/c2 - instanciação de vms sem netmanager/sem/felipe/output.txt'
 
 # cria um dataframe com os dados
 df = pd.read_csv(filename, sep="\n", header=None)
@@ -26,6 +26,8 @@ df['index'] = df.index
 
 df_filtered_jan =  df[df.process.str.contains('  ')]
 df_filtered_dec =  df[df.process.str.contains('2018,')]
+
+
 # df =  df[df.process.str.contains(',P')]
 
 # df_filtered = df_filtered[df_filtered.process.str.contains(',P')]
@@ -46,7 +48,7 @@ dado = []
 dados = []
 count = 0
 tempo = 0
-
+print "Dezembro Iniciado"
 matriz = pd.DataFrame(data = None, columns=['processo', 'qtd', 'tempo'])
 for index, row in df_filtered_dec.iterrows():
     if (not df.iloc[index-1]['process'].__contains__('2018,')):
@@ -74,9 +76,49 @@ for index, row in df_filtered_dec.iterrows():
         matriz.append(df_temp, ignore_index=True)
 #         print "isso ai", matriz
     tempo +=1       
-    
+print "Dezembro finalizado"
+print "Janeiro  iniciado"
+for index, row in df_filtered_jan.iterrows():
+    if (not df.iloc[index-1]['process'].__contains__('  ')):
         
+        if(type(df.iloc[index - 1]['process']) is str):
+            processos = separar_processos(df.iloc[index - 1]['process'])
+            quantidades = separar_quantidades(df.iloc[index]['process'], '2019,')
+            if '' in processos:
+                processos.remove('')
+            if '' in quantidades:
+                quantidades.remove('')
+            if(len(processos) != len(quantidades)):
+                pass
+            else:
+                ind = len(quantidades)
+                for i in xrange(ind):
+                    matriz.loc[count] = [processos[i].split('(')[0], quantidades[i], tempo]
+                    count += 1
+        else:
+            print df.iloc[index - 1]['process']
+    else:
+        # duplicar registros do ultimo tempo
+        df_temp = matriz[matriz['tempo'] == (tempo-1)]
+        df_temp.loc[ :,'tempo'] = tempo
+        matriz.append(df_temp, ignore_index=True)
+#         print "isso ai", matriz
+    tempo +=1    
 #     print index, row['process']
+file_name = 'matriz.csv'
+matriz.to_csv(file_name, sep=',', encoding='utf-8')
+# adiciona uma coluna para ser o valor acumulado
+matriz['acc'] = 0
+groupby_process =  matriz.groupby(['processo', 'tempo'], as_index=False)['qtd'].sum()
+file_name = 'matriz-senw.csv'
+matriz.to_csv(file_name, sep=',', encoding='utf-8')
+
+print matriz
+
+
+
+
+
 
 # registers = df_filtered['process'].str.replace('[\[\]]', '').str.split(',');
 
