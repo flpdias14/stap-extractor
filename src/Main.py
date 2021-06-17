@@ -70,22 +70,5 @@ df['ocurrences'] = pd.to_numeric(df['ocurrences'])
 
 
 groupby_process =  df.groupby(['day','process'], as_index=False)['ocurrences'].agg(['count', 'min', 'mean', 'max', 'sum']).sort_values(['day', 'sum'], ascending=[True, False])
-# groupby_process = groupby_process.sort_values('sum', ascending=False)
-# # groupby_process =  df.groupby('process')
+
 groupby_process.to_csv("processed_groupby_day_and_process_"+filename.replace(".txt", ".csv"))
-# # net =  groupby_process.get_group('NetworkManager(402)/Pai: systemd(1)/UID: 0')
-# # net.ocurences.astype(int)
-# # print net.dtypes()
-# list_process = []
-# list_ocurences = []
-# # for process, process_df in groupby_process:
-# #     list_process.append(process)
-# #     list_ocurences.append(process_df[process_df['process']==process]['ocurences'].sum())
-# # f = groupby_process.get_group('NetworkManager(402)/Pai: systemd(1)/UID: 0')
-# # print f.ocurences.sum()
-
-# # print list_process[0:5]
-# # print list_ocurences[0:5]
-
-
-# # print df.head()
